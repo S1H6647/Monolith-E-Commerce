@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: Monolith E Commerce
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ecommerce
+    username: postgres
+    password: 076493
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  # File upload size limits
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+  # Email service configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: theonlymailsender@gmail.com
+    password: skvp vopj twst ytlu
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+jwt:
+  secret: V6fTF1MzMy9RZTvoV7x7VoVGLXmgtVXHUdMOAHyn6Wg=
+
+cloudinary:
+  cloud-name: dlpanigdn
+  api-key: 264646622641331
+  api-secret: IUh2fYOKpVYT5lRYj3zrF4JHZmM
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
