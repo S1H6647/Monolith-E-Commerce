@@ -1,6 +1,6 @@
 package com.project.monolith_e_commerce.security.jwt;
 
-import com.project.monolith_e_commerce.domain.User;
+import com.project.monolith_e_commerce.domain.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

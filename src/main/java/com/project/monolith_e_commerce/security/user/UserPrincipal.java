@@ -1,6 +1,6 @@
 package com.project.monolith_e_commerce.security.user;
 
-import com.project.monolith_e_commerce.domain.User;
+import com.project.monolith_e_commerce.domain.user.User;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
