@@ -7,6 +7,7 @@ import com.project.monolith_e_commerce.web.dto.auth.RegisterRequest;
 import com.project.monolith_e_commerce.web.dto.auth.RegisterResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +29,12 @@ public class AuthController {
     /** Register a new user account. Returns the created user without a token. */
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return null;
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.register(request));
     }
 
     /** Authenticate and receive a JWT bearer token. */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        return null;
+        return ResponseEntity.ok(userService.login(request));
     }
 }
