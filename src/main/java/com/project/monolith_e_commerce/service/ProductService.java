@@ -13,9 +13,14 @@ import com.project.monolith_e_commerce.web.dto.product.CreateProductRequest;
 import com.project.monolith_e_commerce.web.dto.product.ProductResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -96,6 +101,43 @@ public class ProductService {
         inventoryRepository.save(inventory);
 
         return ProductResponse.from(product, inventory.getQuantity());
+    }
+
+    public List<ProductResponse> getAllProducts(Pageable pageable, Long categoryId, String search) {
+        String searchText = (search == null) ? "" : search.trim();
+        boolean hasSearch = !searchText.isBlank();
+
+        Page<Product> productPage;
+        if (categoryId != null && hasSearch) {
+            productPage = productRepository.findByCategoryIdAndNameContainingIgnoreCase(categoryId, searchText, pageable);
+        } else if (categoryId != null) {
+            productPage = productRepository.findByCategoryId(categoryId, pageable);
+        } else if (hasSearch) {
+            productPage = productRepository.findByNameContainingIgnoreCase(searchText, pageable);
+        } else {
+            productPage = productRepository.findAll(pageable);
+        }
+
+        return productPage.getContent().stream()
+                .map(product -> ProductResponse.from(
+                        product,
+                        Optional.ofNullable(product.getInventory()).map(Inventory::getQuantity).orElse(0)
+                ))
+                .toList();
+    }
+
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+        productRepository.delete(product);
+    }
+
+    public ProductResponse getProductById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+        return ProductResponse.from(product, product.getInventory().getQuantity());
     }
 
 }
