@@ -18,10 +18,14 @@ public record CreateProductRequest(
         @Positive
         BigDecimal price,
 
+        String imageUrl,
+        String imagePublicId,
+
         @NotNull
         Long categoryId,
 
         @PositiveOrZero
         int initialStock
-) {}
+) {
+}
 

@@ -54,4 +54,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .body(Map.of("error", "Access denied"));
     }
+
+    @ExceptionHandler(DuplicateProductException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDenied(DuplicateProductException e) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(Map.of("error", e.getMessage()));
+    }
 }

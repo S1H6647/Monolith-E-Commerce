@@ -80,6 +80,7 @@ public class ProductService {
         product.setName(request.name());
         product.setDescription(request.description());
         product.setPrice(request.price());
+        product.setCategory(category);
 
         if (image != null && !image.isEmpty()) {
             if (product.getImagePublicId() != null) {
