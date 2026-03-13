@@ -14,6 +14,7 @@ import com.project.monolith_e_commerce.web.dto.product.ProductResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -57,6 +58,44 @@ public class ProductService {
         inventoryRepository.save(inventory);
 
         return ProductResponse.from(saved, inventory.getQuantity());
+    }
+
+    @Transactional
+    public ProductResponse updateProduct(
+            Long id,
+            @Valid CreateProductRequest request,
+            MultipartFile image
+    ) {
+        Category category = categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Category of id %d not found", request.categoryId())));
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Product of %d id not found", id)));
+
+        product.setName(request.name());
+        product.setDescription(request.description());
+        product.setPrice(request.price());
+
+        if (image != null && !image.isEmpty()) {
+            if (product.getImagePublicId() != null) {
+                storageService.delete(product.getImagePublicId());
+            }
+
+            CloudinaryUploadResult uploaded = storageService.uploadImage(image);
+            product.setImageUrl(uploaded.secureUrl());
+            product.setImagePublicId(uploaded.publicId());
+        }
+
+        Inventory inventory = inventoryRepository.findByProductId(product.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Inventory of product id %d not found", product.getId())));
+
+        inventory.setProduct(product);
+        inventory.setQuantity(request.initialStock());
+
+        productRepository.save(product);
+        inventoryRepository.save(inventory);
+
+        return ProductResponse.from(product, inventory.getQuantity());
     }
 
 }
