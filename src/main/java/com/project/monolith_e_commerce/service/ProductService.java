@@ -77,19 +77,28 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Product of %d id not found", id)));
 
+        // Block rename to an already-existing product name (except same product).
+        boolean isRenaming = !product.getName().equalsIgnoreCase(request.name());
+        if (isRenaming && productRepository.existsProductByName(request.name())) {
+            throw new DuplicateProductException("Product already exists");
+        }
+
         product.setName(request.name());
         product.setDescription(request.description());
         product.setPrice(request.price());
         product.setCategory(category);
 
         if (image != null && !image.isEmpty()) {
-            if (product.getImagePublicId() != null) {
-                storageService.delete(product.getImagePublicId());
-            }
+            String oldPublicId = product.getImagePublicId();
 
+            // Upload first so old image is only removed after successful replacement.
             CloudinaryUploadResult uploaded = storageService.uploadImage(image);
             product.setImageUrl(uploaded.secureUrl());
             product.setImagePublicId(uploaded.publicId());
+
+            if (oldPublicId != null && !oldPublicId.isBlank()) {
+                storageService.delete(oldPublicId);
+            }
         }
 
         Inventory inventory = inventoryRepository.findByProductId(product.getId())

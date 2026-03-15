@@ -1,5 +1,6 @@
 package com.project.monolith_e_commerce.web.controller;
 
+import com.project.monolith_e_commerce.security.user.UserPrincipal;
 import com.project.monolith_e_commerce.service.CartService;
 import com.project.monolith_e_commerce.web.dto.cart.AddToCartRequest;
 import com.project.monolith_e_commerce.web.dto.cart.CartResponse;
@@ -7,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -27,35 +29,56 @@ public class CartController {
 
     private final CartService cartService;
 
-    /** Get the current authenticated user's cart. */
+    /**
+     * Get the current authenticated user's cart.
+     */
     @GetMapping
-    public ResponseEntity<CartResponse> getCart() {
-        return null;
+    public ResponseEntity<CartResponse> getCart(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return ResponseEntity.ok(cartService.getCart(userPrincipal));
     }
 
-    /** Add a product item to the cart. */
+    /**
+     * Add a product item to the cart.
+     */
     @PostMapping("/items")
-    public ResponseEntity<CartResponse> addItem(@Valid @RequestBody AddToCartRequest request) {
-        return null;
+    public ResponseEntity<CartResponse> addItem(
+            @Valid @RequestBody AddToCartRequest request,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        var response = cartService.addItem(request, userPrincipal);
+        return ResponseEntity.ok(response);
     }
 
-    /** Update the quantity of an existing cart item by product id. */
+    /**
+     * Update the quantity of an existing cart item by product id.
+     */
     @PutMapping("/items/{productId}")
     public ResponseEntity<CartResponse> updateItem(
             @PathVariable Long productId,
-            @RequestParam @Positive int quantity) {
-        return null;
+            @RequestParam @Positive(message = "Quantity must be greater than 0")
+            int quantity,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        return ResponseEntity.ok(cartService.updateItem(productId, quantity, userPrincipal));
     }
 
-    /** Remove a specific item from the cart by product id. */
+    /**
+     * Remove a specific item from the cart by product id.
+     */
     @DeleteMapping("/items/{productId}")
-    public ResponseEntity<CartResponse> removeItem(@PathVariable Long productId) {
-        return null;
+    public ResponseEntity<CartResponse> removeItem(
+            @PathVariable Long productId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        return ResponseEntity.ok(cartService.deleteItem(productId, userPrincipal));
     }
 
-    /** Clear all items from the cart. */
+    /**
+     * Clear all items from the cart.
+     */
     @DeleteMapping
-    public ResponseEntity<Void> clearCart() {
-        return null;
+    public ResponseEntity<Void> clearCart(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        cartService.clearCart(userPrincipal);
+        return ResponseEntity.noContent().build();
     }
 }

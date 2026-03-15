@@ -1,5 +1,6 @@
 package com.project.monolith_e_commerce.domain.user;
 
+import com.project.monolith_e_commerce.domain.cart.Cart;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,6 +33,10 @@ public class User {
     @Column(nullable = false)
     @Builder.Default
     private Role role = Role.CUSTOMER;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id", unique = true)
+    private Cart cart;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;

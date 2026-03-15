@@ -8,12 +8,5 @@ public record CartResponse(
         List<CartItemResponse> items,
         BigDecimal totalPrice
 ) {
-    public record CartItemResponse(
-            Long productId,
-            String productName,
-            int quantity,
-            BigDecimal unitPrice,
-            BigDecimal subtotal
-    ) {}
 }
 

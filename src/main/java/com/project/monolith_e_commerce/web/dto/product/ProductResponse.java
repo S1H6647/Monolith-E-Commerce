@@ -2,6 +2,7 @@ package com.project.monolith_e_commerce.web.dto.product;
 
 import com.project.monolith_e_commerce.domain.product.Product;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -14,7 +15,7 @@ public record ProductResponse(
         String categoryName,
         int stock,
         Instant createdAt
-) {
+) implements Serializable {
     public static ProductResponse from(Product product, int stock) {
         return new ProductResponse(
                 product.getId(),

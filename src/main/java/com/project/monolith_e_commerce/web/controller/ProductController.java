@@ -97,7 +97,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable Long id,
             @Valid @RequestPart("data") CreateProductRequest request,
-            @RequestPart("image") MultipartFile image
+            @RequestPart(value = "image", required = false) MultipartFile image
     ) {
         var response = productService.updateProduct(id, request, image);
         return ResponseEntity.ok(response);

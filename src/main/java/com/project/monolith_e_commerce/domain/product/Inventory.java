@@ -26,6 +26,5 @@ public class Inventory {
 
     @Version
     @Column(nullable = false)
-    @Builder.Default
-    private Long version = 0L;
+    private Long version;
 }
